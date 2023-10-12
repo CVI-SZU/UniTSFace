@@ -1,6 +1,6 @@
 ## Introduction
 
-**This is the official PyTorch implementation of the ICCV 2023 paper.**
+**This is the official PyTorch implementation of the NeurIPS 2023 paper.**
 
 [UniTSFace: Unified Threshold Integrated Sample-to-Sample Loss for Face Recognition.pdf]()
 
