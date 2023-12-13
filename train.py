@@ -44,6 +44,7 @@ class Hyperparameters():
         self.cuda = True
         self.cudnn = False
         self.visible_devices = "0"
+        # self.visible_devices = "0, 1"
         self.fp16 = True
         self.base_lr = 0.1
         self.momentum = 0.9
@@ -57,6 +58,8 @@ class Hyperparameters():
         self.img_size = [112, 112]
         self.train_batch_size = 128
         self.bs_mult = 4
+        # self.train_batch_size = 256
+        # self.bs_mult = 2
         self.drop_last = True
         self.steps = [16, 24]
         self.start_epoch = 0
@@ -91,11 +94,8 @@ def main():
     optimizer = torch.optim.SGD(model_params, params.base_lr, momentum=params.momentum, weight_decay=params.weight_decay, nesterov=False)
 
     if params.cuda:
-        # model = nn.DataParallel(model).cuda()
-        model = model.cuda()
-        # cudnn.benchmark = params.cudnn
-        # net = model.module
-        net = model
+        model = nn.DataParallel(model).cuda()
+        net = model.module
     else:
         net = model.cpu()
 
@@ -151,8 +151,7 @@ def train(train_loader, model, optimizer, epoch, loss_scale, scaler):
     global params
     model.train()
     if params.cuda:
-        # net = model.module
-        net = model
+        net = model.module
     else:
         net = model
 
@@ -170,10 +169,10 @@ def train(train_loader, model, optimizer, epoch, loss_scale, scaler):
 
             ''' forward and compute loss '''
             if scaler is None:
-                face_loss = model(data, label, epoch)
+                face_loss = model(data, label, epoch.repeat(torch.cuda.device_count()))
             else:
                 with torch.cuda.amp.autocast():
-                    face_loss = model(data, label, epoch)
+                    face_loss = model(data, label, epoch.repeat(torch.cuda.device_count()))
 
             batch_scale = 1.0 * label.size(0) / params.train_batch_size
 
@@ -182,9 +181,9 @@ def train(train_loader, model, optimizer, epoch, loss_scale, scaler):
                 optimizer.zero_grad()
             if (j + 1) == len(label_splits):
                 if scaler is None:
-                    (face_loss * loss_scale * batch_scale).backward()
+                    (face_loss.mean() * loss_scale * batch_scale).backward()
                 else:
-                    scaler.scale(face_loss * loss_scale * batch_scale).backward()
+                    scaler.scale(face_loss.mean() * loss_scale * batch_scale).backward()
 
                 if scaler is None:
                     torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=10.0)
@@ -197,11 +196,11 @@ def train(train_loader, model, optimizer, epoch, loss_scale, scaler):
                 net.restrict_weights()
             else:
                 if scaler is None:
-                    (face_loss * loss_scale).backward()
+                    (face_loss.mean() * loss_scale).backward()
                 else:
-                    scaler.scale(face_loss * loss_scale).backward()
+                    scaler.scale(face_loss.mean() * loss_scale).backward()
 
-            loss += face_loss.data
+            loss += face_loss.data.mean()
             count += 1
 
             if (i % params.display == 0 or (i + 1) == len(train_loader)) and (j + 1) == len(label_splits):
