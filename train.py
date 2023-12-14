@@ -169,10 +169,10 @@ def train(train_loader, model, optimizer, epoch, loss_scale, scaler):
 
             ''' forward and compute loss '''
             if scaler is None:
-                face_loss = model(data, label, epoch.repeat(torch.cuda.device_count()))
+                face_loss = model(data, label, epoch)
             else:
                 with torch.cuda.amp.autocast():
-                    face_loss = model(data, label, epoch.repeat(torch.cuda.device_count()))
+                    face_loss = model(data, label, epoch)
 
             batch_scale = 1.0 * label.size(0) / params.train_batch_size
 
