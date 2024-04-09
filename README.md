@@ -2,9 +2,9 @@
 
 **This is the official PyTorch implementation of the NeurIPS 2023 paper.**
 
-[UniTSFace: Unified Threshold Integrated Sample-to-Sample Loss for Face Recognition.pdf]()
+[UniTSFace: Unified Threshold Integrated Sample-to-Sample Loss for Face Recognition.pdf](https://openreview.net/attachment?id=hE7PG1lUZx&name=pdf)
 
-[Supplementary.pdf]()
+[Supplementary.pdf](https://openreview.net/attachment?id=hE7PG1lUZx&name=supplementary_material)
 
 
 ## Get started
