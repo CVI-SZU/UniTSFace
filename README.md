@@ -41,8 +41,12 @@
 If you find **UniTSFace** useful in your research, please consider to cite:
 
   ```bibtex
-  @InProceedings{NeurIPS_2023,
-    author    = {Zhou, Jiancan and Jia, Xi and Li, Qiufu and Shen, Linlin and Duan, Jinming},
-    title     = {UniTSFace: Unified Threshold Integrated Sample-to-Sample Loss for Face Recognition}
+  @InProceedings{NeurIPS_2023_UniTSFace,
+    author    = {Li, Qiufu and Jia, Xi and Zhou, Jiancan and Shen, Linlin and Duan, Jinming},
+    title     = {UniTSFace: Unified Threshold Integrated Sample-to-Sample Loss for Face Recognition},
+    journal   = {Advances in Neural Information Processing Systems},
+    volume    = {36},
+    pages     = {32732--32747},
+    year      = {2023}
   }
   ```
